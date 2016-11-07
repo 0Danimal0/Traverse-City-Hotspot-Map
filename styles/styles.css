@@ -1,0 +1,31 @@
+html,
+body {
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", sans-serif;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#map {
+  height: 100%;
+  left: 362px;
+  position: absolute;
+  right: 0px;
+  bottom: 0px;
+}
+
+#filter-container {
+  width: 338px;
+  background: #fff;
+  height: 100%;
+  line-height: 35px;
+  padding: 10px 10px 30px 10px;
+  margin-left: 1px
+  text-align: left;
+}
+
+.listedItems {
+  list-style-type: none;
+  line-height: 300%;
+  font-size: 1.3em;
+}

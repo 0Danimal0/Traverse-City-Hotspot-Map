@@ -1,0 +1,100 @@
+var map;
+var places = [{
+      placeName : "Paesano's",
+      position : {lat: 44.762806, lng: -85.616607},
+      description : "Best pizza in town!",
+      hours : "11am to 11pm",
+      id : null,
+    },{
+      placeName : "Poppycocks",
+      position : {lat: 44.763916, lng: -85.6224569},
+      description : "Great for dates!",
+      hours : "11am to 11pm",
+      id : null,
+    },{
+      placeName : "7 Monks",
+      position : {lat: 44.7631081, lng: -85.6241574},
+      description : "The place to grab a beer.",
+      hours : "12 to 12pm",
+      id : null,
+    },{
+      placeName : "Creepy State Hospital",
+      position : {lat: 44.755217, lng: -85.6450499},
+      description : "Scary stories get told here",
+      hours : "24/7",
+      id : null,
+    },{
+      placeName : "Clinch Park Marina",
+      position : {lat: 44.7664838, lng: -85.6226803},
+      description : "Big fancy boats!",
+      hours : "24/7",
+      id : null,
+    },{
+      placeName : "Hickory Hills",
+      position : {lat: 44.7690972, lng: -85.6671996},
+      description : "Go huck disks or flips!",
+      hours : "10am to 10pm",
+      id : null,
+    }]
+
+
+var ViewModel = {
+  var self = this;
+
+  self.placeLocation = ko.observableArray(places);
+  self.filter = ko.observable('');
+
+
+};
+
+
+//viewModel
+function initMap() {
+  //API map constructor that creates new map.
+  map = new google.maps.Map(document.getElementById('map'), {
+        center: {lat: 44.763916, lng: -85.6224569},
+        zoom: 14,
+    });
+
+  var self = this;
+  var markers = [];
+//  this.positions = ko.observable(places)[0];
+  var bounds = new google.maps.LatLngBounds();
+  var placeInfoWindow = new google.maps.InfoWindow();
+
+  for (i=0; i<places.length; i++) {
+    var name = places[i].placeName;
+    var position = places[i].position;
+    var description = places[i].description;
+    var hours = places[i].hours;
+    var id = places[i].id;
+    marker = new google.maps.Marker({
+      map: map,
+      position: position,
+      title: name,
+      description: description,
+      animation: google.maps.Animation.DROP,
+      id: i,
+      //add additional properties like animation...
+    })
+    markers.push(marker);
+    bounds.extend(marker.position)
+    marker.addListener('click', function() {
+      openInfoWindow(this, placeInfoWindow);
+    })
+    map.fitBounds(bounds);
+    markers[i].setMap(map);
+  }
+
+  function openInfoWindow(marker, infoWindow) {
+    if (infoWindow.marker != marker) {
+      infoWindow.marker = marker;
+      infoWindow.setContent('<div><p>' + marker.title + '</p> <p>' + marker.description + '</p> </div>');
+      infoWindow.open(map, marker);
+      infoWindow.addListener('closeClick', function() {
+        infoWindow.setMarker(null);
+      })
+    }
+  }
+      ko.applyBindings(new ViewModel());
+}
