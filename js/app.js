@@ -49,7 +49,8 @@ var places = [{
       id : null,
     }]
 
-    //viewModel
+//----ViewModel ---- //
+
     function initMap() {
       //API map constructor that creates new map.
       map = new google.maps.Map(document.getElementById('map'), {
@@ -101,7 +102,7 @@ var ViewModel = function(){
 
     //add click listener to open window for this marker
     marker.addListener('click', function() {
-    self.openInfoWindow(this, infoWindow);
+      self.openInfoWindow(this, infoWindow);
     })
 
   }
@@ -128,7 +129,7 @@ var ViewModel = function(){
 
 //make a function to filter the list!
   self.filterList = ko.computed(function() {
-    return ko.utils.arrayFilter(self.placeLocation(), function(myPlace){
+    return ko.utils.arrayFilter(self.placeLocation(), function(myPlace) {
       var matched = myPlace.placeName.toLowerCase().indexOf(self.filter().toLowerCase()) >= 0;
       myPlace.marker.setVisible(matched);
       return matched;
