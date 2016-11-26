@@ -6,6 +6,7 @@
     <script src='js/app.js'></script>
     <script src="js/knockout.js"></script>
     <script src="js/jquery.js"></script>
+    <script src="js/oauth-signature.min.js"></script>
     <link rel="stylesheet" href="styles/styles.css" type="text/css">
     <meta name='viewport' content='width=device-width, initial-scale=1'
 </head>
@@ -16,7 +17,7 @@
       <hr>
       <h2 id='filter-title'>Filter</h2>
       <input data-bind="textInput: filter, valueUpdate: 'afterkeydown'"></input>
-      <ul class='listedItems' data-bind='foreach: filterList'>
+      <ul class='listedItems' data-bind='foreach: placeLocation'>
         <li> <a class='placeListItems' data-bind='text: placeName, click: $parent.setMark'> </a> </li>
       </ul>
     </div>
