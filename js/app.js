@@ -71,13 +71,13 @@ var places = [{
     }
 
 
-var yelpAPI = function(name, latitude, longitude, marker) {
+var yelpAPI = function(marker) {
 
     function nonce_generate() {
       return (Math.floor(Math.random() * 1e12).toString());
     }
 
-    var yelpUrl = 'https://api.yelp.com/v2/search/';
+    var yelpUrl = 'https://api.yelp.com/v2/search?';
     var yelpConsumer_Secret = 'Jtd-Kf37xI4sR5HN_OMgyUBrEGw';
     var yelpTokenSecret	= 'JoW4x46vYdfslwAplRqyU78cK1Y';
 
@@ -89,14 +89,12 @@ var yelpAPI = function(name, latitude, longitude, marker) {
       oauth_signature_method	: 'HMAC-SHA1',
       oauth_version : '1.0',
       callback : 'cb',
-      term: name,
-      location: '48236',
+      location : '48236',
+      term : marker.title,
     };
 
     var encodedSignature = oauthSignature.generate('GET', yelpUrl, parameters, yelpConsumer_Secret, yelpTokenSecret);
     parameters.oauth_signature = encodedSignature;
-    console.log("obtaining encodedSignature:"+encodedSignature);
-    console.log(yelpUrl);
 
 
     var settings = {
@@ -112,6 +110,7 @@ var yelpAPI = function(name, latitude, longitude, marker) {
         console.log("Bueler...");
       },
     }
+
     $.ajax(settings)
 };
 
@@ -154,14 +153,13 @@ var ViewModel = function() {
         place.marker.setAnimation(google.maps.Animation.BOUNCE);
         setTimeout(function () {
                     place.marker.setAnimation(null);
-                }, 2000);
+                }, 3000);
         }
       }
 
     // When map marker is clicked, create new infoWindow with Yelp content.
     google.maps.event.addListener(place.marker, 'click', function() {
-        yelpAPI(place.name, place.latitude, place.longitude, place.marker);
-        //yelpContentError(place);
+        yelpAPI(place.marker);
     });
 
   });
