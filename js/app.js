@@ -71,7 +71,7 @@ var places = [{
     }
 
 
-var yelpAPI = function(marker) {
+function yelpAPI(marker) {
 
     function nonce_generate() {
       return (Math.floor(Math.random() * 1e12).toString());
@@ -89,7 +89,7 @@ var yelpAPI = function(marker) {
       oauth_signature_method	: 'HMAC-SHA1',
       oauth_version : '1.0',
       callback : 'cb',
-      location : '48236',
+      location : '49686',
       term : marker.title,
     };
 
@@ -100,7 +100,7 @@ var yelpAPI = function(marker) {
     var settings = {
       url : yelpUrl,
       data : parameters,
-      chache : true,
+      cache : true,
       dataType : 'jsonp',
       jsonpCallback: 'cb',
       success : function(results) {
@@ -109,9 +109,61 @@ var yelpAPI = function(marker) {
       fail : function(results) {
         console.log("Bueler...");
       },
-    }
+    };
 
-    $.ajax(settings)
+
+    $.ajax(settings).done(function(data) {
+      console.log(data);
+      var content = '<div id="iwContainer">'
+      var biz = data.businesses[0];
+
+      if (data.businesses.length) {
+
+        if (biz.name !== undefined) {
+          content += '<div class="iwTitle"> <p>' +biz.name+ '</p> </div>';
+        }
+
+        // Contacts Class == OPEN
+        content += '<div class="yelp-contacts">'
+
+        if (biz.display_phone !== undefined) {
+          content += '<p>' +biz.display_phone+ '</p>';
+        }
+
+        if (biz.location.display_address !== undefined) {
+          content += '<p>' +biz.location.display_address+ '</p>';
+        }
+
+        // Contacts Class == Close
+        content += '</div>'
+
+//        if (biz.image_url !== undefined) {
+//          content += '<div class="yelp-image"><img src="'+ biz.image_url +'"></div>';
+//        }
+
+        if (biz.rating_img_url !== undefined) {
+          content += '<span class="yelp-rating">Yelp Rating:</span> <img src="' +biz.rating_img_url+ '">';
+        }
+
+        if (biz.snippet_text !== undefined) {
+          content += '<p class"yelp-snippet">' +biz.snippet_text+ '"</p>';
+        }
+
+      } else {
+        content += '<h2>' +places.placeName+ '</h2>';
+        content += '<h2>' +places.description+ '</h2>';
+      }
+      content += '</div>';
+
+      infoWindow.setContent(content);
+      infoWindow.open(map, marker);
+
+    }).fail(function() {
+      alert("This Yelp call is not working...");
+
+      clearTimeout(yelpRequestTimeout);
+    });
+
 };
 
 
@@ -140,7 +192,9 @@ var ViewModel = function() {
     });
 
     //Store ability to make infoWindows on each marker.
-    infoWindow = new google.maps.InfoWindow();
+    infoWindow = new google.maps.InfoWindow({
+      maxWidth: 200,
+    });
 
     //add click listener to open window for this marker
     place.marker.addListener('click', toggleMarker)
