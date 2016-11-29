@@ -54,14 +54,20 @@ var places = [{
     function initMap() {
       //API map constructor that creates new map.
       map = new google.maps.Map(document.getElementById('map'), {
-            center: {lat: 44.763916, lng: -85.6224569},
+            center: {lat: 44.773133, lng: -85.619024},
             zoom: 14,
             mapTypeId: 'hybrid',
+            mapTypeControlOptions: {
+              style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+              position: google.maps.ControlPosition.TOP_CENTER
+          },
         });
 
     //  this.positions = ko.observable(places)[0];
       var bounds = new google.maps.LatLngBounds();
       ko.applyBindings(new ViewModel());
+
+
 
 
     //    bounds.extend(ViewModel.placeLocation()[i].marker[i])
@@ -235,24 +241,14 @@ var ViewModel = function() {
   // This stores users keystrokes into input-box as an observable string for filtering.
   self.filter = ko.observable('');
 
-  // Make a function to filter the viewable array by the input-box!
-  self.filterList = function() {
-    // Clear the placeLocation array.
-    self.placeLocation().removeAll();
 
-    // Iterate over model to see what's matched to input-box, then push matches to viewable-array.
-    self.allPlaces.forEach(function(myPlace) {
+  self.filterList = ko.computed(function() {
+    return ko.utils.arrayFilter(self.placeLocation(), function(myPlace) {
+      var matched = myPlace.placeName.toLowerCase().indexOf(self.filter().toLowerCase()) >= 0;
+      myPlace.marker.setVisible(matched);
+      return matched;
+    })
+  })
 
-      // Make so none of the model values are on map.
-      myplace.setVisible(false);
-
-      // Test if an model values match filter input-box... if so...
-      if (myPlace.placeName.toLowerCase().indexOf(self.filter().toLowerCase()) >= 0) {
-
-        // ...push to viewable-array.
-        self.placeLocation().push(myPlace);
-      };
-    });
-  };
 
 }

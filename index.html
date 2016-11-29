@@ -3,26 +3,40 @@
 <head>
 
     <title>Alpers Neighborhood Map</title>
+
+    <link rel="stylesheet" type="text/css" href="styles/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="styles/bootstrap-drawer.min.css">
     <script src='js/app.js'></script>
     <script src="js/knockout.js"></script>
-    <script src="js/jquery.js"></script>
     <script src="js/oauth-signature.min.js"></script>
     <link rel="stylesheet" href="styles/styles.css" type="text/css">
-    <meta name='viewport' content='width=device-width, initial-scale=1'
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
 </head>
 
-<body>
-    <div id='filter-container'>
-      <h2>Traverse City Hot Spots</h2>
-      <hr>
-      <h2 id='filter-title'>Filter</h2>
-      <input data-bind="textInput: filter, valueUpdate: 'afterkeydown'"></input>
-      <ul class='listedItems' data-bind='foreach: placeLocation'>
-        <li> <a class='placeListItems' data-bind='text: placeName, click: $parent.setMark'> </a> </li>
-      </ul>
+<body class="has-drawer"> <!-- add this class to your body for proper sizing -->
+    <div id="drawerExample" class="drawer dw-xs-10 dw-sm-6 dw-md-4 fold" aria-labelledby="drawerExample">
+        <div class="drawer-controls">
+            <a href="#drawerExample" data-toggle="drawer" aria-foldedopen="false" aria-controls="drawerExample" class="btn btn-primary btn-sm">Map Filter Menu</a>
+        </div>
+        <div class="drawer-contents">
+            <div class="drawer-heading">
+                <h2 class="drawer-title">Map Filter</h2>
+            </div>
+            <div class="drawer-body">
+              <input data-bind="textInput: filter, valueUpdate: 'afterkeydown'"></input>
+              <ul class="drawer-nav" data-bind='foreach: filterList'>
+                  <li role="presentation"><a class='placeListItems' data-bind='text: placeName, click: $parent.setMark'></a></li>
+              </ul>
+            </div>
+        </div>
     </div>
-  <div id='map'></div>
+    <div class="container">
+      <div id='map'></div>
+    </div>
 
+  <script src="js/jquery.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/drawer.min.js"></script>
   <script async defer
   src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBm3DuUeJN3K0Rf4ViUYQpNu5gONwLri6A&callback=initMap"></script>
 

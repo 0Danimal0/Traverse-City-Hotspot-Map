@@ -2,32 +2,25 @@ html,
 body {
   font-family: "HelveticaNeue-Light", "Helvetica Neue Light", sans-serif;
   height: 100%;
+  width: 100%;
   margin: 0;
   padding: 0;
 }
 
+@media screen and (min-width: 781px) {
+
 #map {
   height: 100%;
-  left: 362px;
+  width: 100%;
   position: absolute;
   right: 0px;
   bottom: 0px;
 }
 
-#filter-container {
-  width: 338px;
-  background: #fff;
-  height: 100%;
-  line-height: 35px;
-  padding: 10px 10px 30px 10px;
-  margin-left: 1px
-  text-align: left;
-}
-
 .listedItems {
   list-style-type: none;
-  line-height: 300%;
-  font-size: 1.3em;
+  line-height: 250%;
+  font-size: 1em;
 }
 
 .yelp-snippet {
@@ -53,4 +46,53 @@ body {
 
 span.yelp-rating {
     font: bold;
+}
+
+
+
+
+
+    .filter-container {
+      max-width: 300px;
+      width: 25%;
+      height: 100%;
+      position: relative;;
+      transform: translate(0, 0);
+      background: #fff;
+      margin-left: 5px
+    }
+
+    body {
+      display: flex;
+      width: 100%;
+    }
+}
+
+@media screen and (max-width: 780px){
+  .filter-container {
+    max-width: 300px;
+    height: 100%;
+    position: absolute;
+    transform: translate(-300px, 0);
+    transition: transform 0.3s ease;
+    background: #fff;
+    margin-left: 5px
+  }
+
+  .filter-container.open {
+    transform: translate(0, 0);
+  }
+
+  #mobile-header {
+    position: absolute;
+  }
+
+  #map {
+    height: 100%;
+    left: 0px;
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+  }
+
 }
