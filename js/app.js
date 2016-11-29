@@ -55,27 +55,91 @@ var places = [{
       //API map constructor that creates new map.
       map = new google.maps.Map(document.getElementById('map'), {
             center: {lat: 44.773133, lng: -85.619024},
-            zoom: 14,
+            zoom: 13,
             mapTypeId: 'hybrid',
             mapTypeControlOptions: {
               style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
               position: google.maps.ControlPosition.TOP_CENTER
-          },
+            },
         });
 
-    //  this.positions = ko.observable(places)[0];
+      if (map == 0) {
+        alert("The almighty Google didn't load!");
+      }
+
       var bounds = new google.maps.LatLngBounds();
       ko.applyBindings(new ViewModel());
 
-
-
-
-    //    bounds.extend(ViewModel.placeLocation()[i].marker[i])
-    //    map.fitBounds(bounds);
-    //    ViewModel.placeLocation()[i].setMap(map);
-
     }
 
+var ViewModel = function() {
+  var self = this;
+
+  //Loop over all model data elements and give them a marker,
+  places.forEach(function(place) {
+
+    //create markers for each model item.
+    place.marker = new google.maps.Marker({
+      map: map,
+      position: { lat: place.latitude, lng: place.longitude },
+      title: place.placeName,
+      animation: google.maps.Animation.DROP,
+    });
+    place.marker.addListener('click', toggleBounce);
+
+    function toggleBounce() {
+      if (place.marker.getAnimation() !== null) {
+        place.marker.setAnimation(null);
+      } else {
+        place.marker.setAnimation(google.maps.Animation.BOUNCE);
+        setTimeout(function () {
+          place.marker.setAnimation(null);
+        }, 2090);
+      }
+    };
+
+    //Store ability to make infoWindows on each marker.
+    infoWindow = new google.maps.InfoWindow({
+      maxWidth: 200,
+    });
+
+    // When map marker is clicked, create new infoWindow with Yelp content.
+    google.maps.event.addListener(place.marker, 'click', function() {
+        yelpAPI(place.marker);
+        window.setTimeout(function() {
+            map.panTo(place.marker.getPosition());
+          }, 2090);
+    });
+
+  });
+
+  self.placeLocation = ko.observableArray();
+
+  // Push all places
+  places.forEach(function(place) {
+    self.placeLocation.push(place);
+  });
+
+  // This stores users keystrokes into input-box as an observable string for filtering.
+  self.filter = ko.observable('');
+
+  // This computed observable returns an array of list iteams that will display
+  // on the mapFilter list.
+  self.filterList = ko.computed(function() {
+    return ko.utils.arrayFilter(self.placeLocation(), function(myPlace) {
+      var matched = myPlace.placeName.toLowerCase().indexOf(self.filter().toLowerCase()) >= 0;
+      myPlace.marker.setVisible(matched);
+      return matched;
+    })
+  })
+
+  // Viewable function, triggered with a keystroke to the filter input box, 'triggers'
+  // the selected marker's 'click' event, which makes all 'click' listeners perform.
+  self.setMark = function(place, marker) {
+        google.maps.event.trigger(place.marker, 'click');
+  };
+
+};
 
 function yelpAPI(marker) {
 
@@ -110,10 +174,10 @@ function yelpAPI(marker) {
       dataType : 'jsonp',
       jsonpCallback: 'cb',
       success : function(results) {
-        console.log("We're finally in business!");
+        console.log("Successful AJAX call to Yelp.");
       },
       fail : function(results) {
-        console.log("Bueler...");
+        console.log("Unsuccessful AJAX call to Yelp.");
       },
     };
 
@@ -124,131 +188,34 @@ function yelpAPI(marker) {
       var biz = data.businesses[0];
 
       if (data.businesses.length) {
-
-        if (biz.name !== undefined) {
-          content += '<div class="iwTitle"> <p>' +biz.name+ '</p> </div>';
-        }
-
+        content += '<div class="iwTitle"> <p>' +biz.name+ '</p> </div>';
         // Contacts Class == OPEN
         content += '<div class="yelp-contacts">'
-
-        if (biz.display_phone !== undefined) {
-          content += '<p>' +biz.display_phone+ '</p>';
-        }
-
-        if (biz.location.display_address !== undefined) {
-          content += '<p>' +biz.location.display_address+ '</p>';
-        }
-
+        content += '<p>' +biz.display_phone+ '</p>';
+        content += '<p>' +biz.location.display_address+ '</p>';
         // Contacts Class == Close
         content += '</div>'
-
-//        if (biz.image_url !== undefined) {
-//          content += '<div class="yelp-image"><img src="'+ biz.image_url +'"></div>';
-//        }
-
-        if (biz.rating_img_url !== undefined) {
-          content += '<span class="yelp-rating">Yelp Rating:</span> <img src="' +biz.rating_img_url+ '">';
-        }
-
-        if (biz.snippet_text !== undefined) {
-          content += '<p class"yelp-snippet">' +biz.snippet_text+ '"</p>';
-        }
+        content += '<span class="yelp-rating">Yelp Rating:</span> <img src="' +biz.rating_img_url+ '">';
+        content += '<p class"yelp-snippet">' +biz.snippet_text+ '"</p>';
 
       } else {
+
         content += '<h2>' +places.placeName+ '</h2>';
         content += '<h2>' +places.description+ '</h2>';
+
       }
+      // Close "iwContainer" div.
       content += '</div>';
 
       infoWindow.setContent(content);
       infoWindow.open(map, marker);
 
     }).fail(function() {
-      alert("This Yelp call is not working...");
-
-      clearTimeout(yelpRequestTimeout);
+      alert("Sorry, but the map can't seem to connect to yelp.");
     });
-
 };
 
-
-
-var ViewModel = function() {
-  var self = this;
-
-  //Store a reference to the model in the ViewModel.
-  self.allPlaces = [];
-
-  //Push all model information to the reference array.
-  places.forEach(function(place) {
-    self.allPlaces.push(place);
-  });
-
-
-  //Loop over all model data elements and give them a marker,
-  self.allPlaces.forEach(function(place) {
-
-    //create markers for each model item.
-    place.marker = new google.maps.Marker({
-      map: map,
-      position: { lat: place.latitude, lng: place.longitude },
-      title: place.placeName,
-      animation: google.maps.Animation.DROP,
-    });
-
-    //Store ability to make infoWindows on each marker.
-    infoWindow = new google.maps.InfoWindow({
-      maxWidth: 200,
-    });
-
-    //add click listener to open window for this marker
-    place.marker.addListener('click', toggleMarker)
-
-    // Toggle markers to make them bounce when selected.
-    function toggleMarker() {
-      if (place.marker.getAnimation() !== null) {
-        place.marker.setAnimation(null);
-      } else {
-        place.marker.setAnimation(google.maps.Animation.BOUNCE);
-        setTimeout(function () {
-                    place.marker.setAnimation(null);
-                }, 3000);
-        }
-      }
-
-    // When map marker is clicked, create new infoWindow with Yelp content.
-    google.maps.event.addListener(place.marker, 'click', function() {
-        yelpAPI(place.marker);
-    });
-
-  });
-
-  // Create a viewable array that we use in sidebar.
-  self.placeLocation = ko.observableArray();
-
-  // Push all places
-  self.allPlaces.forEach(function(place) {
-    self.placeLocation.push(place);
-  });
-
-  // Viewable function, triggered with a keystroke to the filter input box, 'triggers'
-  // the selected marker's 'click' event, which makes all 'click' listeners perform.
-  self.setMark = function(place, marker) {
-        google.maps.event.trigger(place.marker, 'click');
-  };
-
-  // This stores users keystrokes into input-box as an observable string for filtering.
-  self.filter = ko.observable('');
-
-
-  self.filterList = ko.computed(function() {
-    return ko.utils.arrayFilter(self.placeLocation(), function(myPlace) {
-      var matched = myPlace.placeName.toLowerCase().indexOf(self.filter().toLowerCase()) >= 0;
-      myPlace.marker.setVisible(matched);
-      return matched;
-    })
-  })
-
-
-}
+function mapLoadError() {
+  alert("The almighty Google has failed to load!");
+  console.log("The almighty Google has failed to load!");
+};

@@ -1,10 +1,15 @@
-Created for Project 5-1 of the Udacity Front End Developer Nanodegree.
+Traverse City Favorites Neighborhood Map
 
-This is the Udacity Neightborhood Map Project. This is the Udacity Neighborhood Map Project. \
-It's intended as a challenge to put together a website from various APIs. This includes \
-Google Maps.
+This application uses the Google Maps API and Yelp Business Search API to display information
+about some of my favorite restaurants around Traverse City, Michigan.
 
-Included is a list of my favorite spots around Traverse City, Michigan.
+To run this application, you must open the 'index.html' file in an internet browser (such as Google Chrome or Internet Explorer).
 
-The app allows you to filter the list down as you type. In return, it displays the locations\
-on the map.
+Application functionality: The list of my chosen restaurants is accessible through the "Map Filter Menu" button, which opens the
+filter list.
+
+This application utilizes the following packages:
+Knockout.js - http://getbootstrap.com/
+Boostrap Drawer - http://carolineamaba.com/bootstrap-drawer/
+jQuery - https://jquery.com/
+Oauth-Signature Generator by bettiolo -- https://github.com/bettiolo/oauth-signature-js
